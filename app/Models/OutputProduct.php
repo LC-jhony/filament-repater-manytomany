@@ -13,6 +13,7 @@ class OutputProduct extends Model
         'output_id',
         'product_id',
         'quantity',
+        'date'
     ];
 
     public function output()

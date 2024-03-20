@@ -2,18 +2,19 @@
 
 namespace App\Livewire\Outputs;
 
+use Filament\Forms;
+use App\Models\User;
 use App\Models\Output;
 use App\Models\Product;
-use App\Models\User;
-use Filament\Forms;
-use Filament\Forms\Components\Card;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
-use Illuminate\Contracts\View\View;
+use Filament\Forms\Get;
 use Livewire\Component;
+use Filament\Forms\Form;
+use Filament\Forms\Components\Card;
+use Illuminate\Contracts\View\View;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Concerns\InteractsWithForms;
 
 class CreateOutput extends Component implements HasForms
 {
@@ -30,28 +31,23 @@ class CreateOutput extends Component implements HasForms
     {
         return $form
             ->schema([
-                Card::make('')->schema([
-                    Forms\Components\Select::make('user_id')
-                        ->searchable()
-                        ->options(User::pluck('name', 'id'))
-                        ->required()
-                        ->native(false),
-                    Forms\Components\DatePicker::make('date')
-                        ->required(),
-                ])->columns(2),
+                Card::make('')
+                    ->schema([Forms\Components\Select::make('user_id')->searchable()->options(User::pluck('name', 'id'))->required()->native(false),
+                     Forms\Components\DatePicker::make('date')->required()])
+                    ->columns(2),
                 Section::make('Lista de productos')->schema([
                     Repeater::make('outputproduct')
                         ->label('')
                         ->relationship()
                         ->schema([
-                            Forms\Components\Select::make('product_id')
-                                ->options(Product::pluck('name', 'id'))
-                                ->searchable()
-                                ->native(false),
-                            forms\Components\TextInput::make('quantity'),
-                        ])
-                        ->grid(2)
-                        ->columns(2),
+                            Forms\Components\Select::make('product_id')->options(Product::pluck('name', 'id'))->searchable()->native(false), 
+                        forms\Components\TextInput::make('quantity'),
+                        Forms\Components\DatePicker::make('date')
+                        ->required()                      
+                                             ])
+                        
+                        // ->grid(2)
+                        ->columns(3),
                 ]),
             ])
             ->statePath('data')
@@ -60,7 +56,6 @@ class CreateOutput extends Component implements HasForms
 
     public function create(): void
     {
-
         $data = $this->form->getState();
 
         $record = Output::create($data);
@@ -71,12 +66,13 @@ class CreateOutput extends Component implements HasForms
             $product->quantity -= $item['quantity'];
             $product->save();
         }
+        
         $this->reset();
+        
     }
 
     public function render(): View
     {
-
         return view('livewire.outputs.create-output', [
             'products' => Product::all(),
         ]);

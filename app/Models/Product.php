@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
@@ -13,11 +14,20 @@ class Product extends Model
     protected $fillable = [
         'code',
         'name',
-        'unit_price',
-        'unit_measure',
-        'parchuse_order',
+        'pu',
+        'um',
+        'oc',
         'quantity',
+        'category_id',
     ];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(
+            related: Category::class,
+            foreignKey: 'category_id'
+        );
+    }
 
     public function outputproduct(): HasMany
     {
